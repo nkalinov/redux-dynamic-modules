@@ -96,6 +96,188 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
+/***/ "../../node_modules/redux-devtools-extension/developmentOnly.js":
+/*!**********************************************************************************************************!*\
+  !*** /Users/nkalinov/dev/redux-dynamic-modules/node_modules/redux-devtools-extension/developmentOnly.js ***!
+  \**********************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var compose = __webpack_require__(/*! redux */ "redux").compose;
+
+exports.__esModule = true;
+exports.composeWithDevTools =
+  "development" !== 'production' &&
+  typeof window !== 'undefined' &&
+  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    : function () {
+        if (arguments.length === 0) return undefined;
+        if (typeof arguments[0] === 'object') return compose;
+        return compose.apply(null, arguments);
+      };
+
+exports.devToolsEnhancer =
+  "development" !== 'production' &&
+  typeof window !== 'undefined' &&
+  window.__REDUX_DEVTOOLS_EXTENSION__
+    ? window.__REDUX_DEVTOOLS_EXTENSION__
+    : function () {
+        return function (noop) {
+          return noop;
+        };
+      };
+
+
+/***/ }),
+
+/***/ "../../node_modules/redux-dynamic-middlewares/lib/index.js":
+/*!*****************************************************************************************************!*\
+  !*** /Users/nkalinov/dev/redux-dynamic-modules/node_modules/redux-dynamic-middlewares/lib/index.js ***!
+  \*****************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.createDynamicMiddlewares = exports.resetMiddlewares = exports.removeMiddleware = exports.addMiddleware = undefined;
+
+var _redux = __webpack_require__(/*! redux */ "redux");
+
+var createDynamicMiddlewares = function createDynamicMiddlewares() {
+  var allDynamicMiddlewares = [];
+
+  var enhancer = function enhancer(store) {
+    return function (next) {
+      return function (action) {
+        var chain = allDynamicMiddlewares.map(function (middleware) {
+          return middleware(store);
+        });
+
+        return _redux.compose.apply(undefined, chain)(next)(action);
+      };
+    };
+  };
+
+  var addMiddleware = function addMiddleware() {
+    for (var _len = arguments.length, middlewares = Array(_len), _key = 0; _key < _len; _key++) {
+      middlewares[_key] = arguments[_key];
+    }
+
+    allDynamicMiddlewares = [].concat(allDynamicMiddlewares, middlewares);
+  };
+
+  var removeMiddleware = function removeMiddleware(middleware) {
+    var index = allDynamicMiddlewares.findIndex(function (d) {
+      return d === middleware;
+    });
+
+    if (index === -1) {
+      // eslint-disable-next-line no-console
+      console.error('Middleware does not exist!', middleware);
+
+      return;
+    }
+
+    allDynamicMiddlewares = allDynamicMiddlewares.filter(function (_, mdwIndex) {
+      return mdwIndex !== index;
+    });
+  };
+
+  var resetMiddlewares = function resetMiddlewares() {
+    allDynamicMiddlewares = [];
+  };
+
+  return {
+    enhancer: enhancer,
+    addMiddleware: addMiddleware,
+    removeMiddleware: removeMiddleware,
+    resetMiddlewares: resetMiddlewares
+  };
+};
+
+var dynamicMiddlewaresInstance = createDynamicMiddlewares();
+
+exports.default = dynamicMiddlewaresInstance.enhancer;
+var addMiddleware = dynamicMiddlewaresInstance.addMiddleware,
+    removeMiddleware = dynamicMiddlewaresInstance.removeMiddleware,
+    resetMiddlewares = dynamicMiddlewaresInstance.resetMiddlewares;
+exports.addMiddleware = addMiddleware;
+exports.removeMiddleware = removeMiddleware;
+exports.resetMiddlewares = resetMiddlewares;
+exports.createDynamicMiddlewares = createDynamicMiddlewares;
+
+/***/ }),
+
+/***/ "../../node_modules/webpack/buildin/global.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/global.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1, eval)("this");
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+
+/***/ "../../node_modules/webpack/buildin/module.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/module.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = function(module) {
+	if (!module.webpackPolyfill) {
+		module.deprecate = function() {};
+		module.paths = [];
+		// module.parent = undefined by default
+		if (!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function() {
+				return module.l;
+			}
+		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function() {
+				return module.i;
+			}
+		});
+		module.webpackPolyfill = 1;
+	}
+	return module;
+};
+
+
+/***/ }),
+
 /***/ "./lib/Contracts.js":
 /*!**************************!*\
   !*** ./lib/Contracts.js ***!
@@ -122,7 +304,7 @@ exports.__esModule = true;
 //inspired from https://github.com/pofigizm/redux-dynamic-middlewares
 exports.__esModule = true;
 exports.getMiddlewareManager = void 0;
-var redux_dynamic_middlewares_1 = __webpack_require__(/*! redux-dynamic-middlewares */ "./node_modules/redux-dynamic-middlewares/lib/index.js");
+var redux_dynamic_middlewares_1 = __webpack_require__(/*! redux-dynamic-middlewares */ "../../node_modules/redux-dynamic-middlewares/lib/index.js");
 exports.getMiddlewareManager = function () {
     var dynamicMiddlewaresInstance = redux_dynamic_middlewares_1.createDynamicMiddlewares();
     var add = function (middlewares) {
@@ -516,7 +698,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
 exports.__esModule = true;
 exports.createStore = void 0;
 var redux_1 = __webpack_require__(/*! redux */ "redux");
-var developmentOnly_1 = __webpack_require__(/*! redux-devtools-extension/developmentOnly */ "./node_modules/redux-devtools-extension/developmentOnly.js");
+var developmentOnly_1 = __webpack_require__(/*! redux-devtools-extension/developmentOnly */ "../../node_modules/redux-devtools-extension/developmentOnly.js");
 var MiddlewareManager_1 = __webpack_require__(/*! ./Managers/MiddlewareManager */ "./lib/Managers/MiddlewareManager.js");
 var ModuleManager_1 = __webpack_require__(/*! ./Managers/ModuleManager */ "./lib/Managers/ModuleManager.js");
 var RefCountedManager_1 = __webpack_require__(/*! ./Managers/RefCountedManager */ "./lib/Managers/RefCountedManager.js");
@@ -2972,7 +3154,7 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 
 module.exports = freeGlobal;
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../node_modules/webpack/buildin/global.js */ "../../node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 
@@ -4168,7 +4350,7 @@ var nodeUtil = (function() {
 
 module.exports = nodeUtil;
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../node_modules/webpack/buildin/module.js */ "../../node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
 
@@ -5008,7 +5190,7 @@ var isBuffer = nativeIsBuffer || stubFalse;
 
 module.exports = isBuffer;
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../node_modules/webpack/buildin/module.js */ "../../node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
 
@@ -5715,188 +5897,6 @@ function unset(object, path) {
 }
 
 module.exports = unset;
-
-
-/***/ }),
-
-/***/ "./node_modules/redux-devtools-extension/developmentOnly.js":
-/*!******************************************************************!*\
-  !*** ./node_modules/redux-devtools-extension/developmentOnly.js ***!
-  \******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var compose = __webpack_require__(/*! redux */ "redux").compose;
-
-exports.__esModule = true;
-exports.composeWithDevTools =
-  "development" !== 'production' &&
-  typeof window !== 'undefined' &&
-  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-    : function () {
-        if (arguments.length === 0) return undefined;
-        if (typeof arguments[0] === 'object') return compose;
-        return compose.apply(null, arguments);
-      };
-
-exports.devToolsEnhancer =
-  "development" !== 'production' &&
-  typeof window !== 'undefined' &&
-  window.__REDUX_DEVTOOLS_EXTENSION__
-    ? window.__REDUX_DEVTOOLS_EXTENSION__
-    : function () {
-        return function (noop) {
-          return noop;
-        };
-      };
-
-
-/***/ }),
-
-/***/ "./node_modules/redux-dynamic-middlewares/lib/index.js":
-/*!*************************************************************!*\
-  !*** ./node_modules/redux-dynamic-middlewares/lib/index.js ***!
-  \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-exports.createDynamicMiddlewares = exports.resetMiddlewares = exports.removeMiddleware = exports.addMiddleware = undefined;
-
-var _redux = __webpack_require__(/*! redux */ "redux");
-
-var createDynamicMiddlewares = function createDynamicMiddlewares() {
-  var allDynamicMiddlewares = [];
-
-  var enhancer = function enhancer(store) {
-    return function (next) {
-      return function (action) {
-        var chain = allDynamicMiddlewares.map(function (middleware) {
-          return middleware(store);
-        });
-
-        return _redux.compose.apply(undefined, chain)(next)(action);
-      };
-    };
-  };
-
-  var addMiddleware = function addMiddleware() {
-    for (var _len = arguments.length, middlewares = Array(_len), _key = 0; _key < _len; _key++) {
-      middlewares[_key] = arguments[_key];
-    }
-
-    allDynamicMiddlewares = [].concat(allDynamicMiddlewares, middlewares);
-  };
-
-  var removeMiddleware = function removeMiddleware(middleware) {
-    var index = allDynamicMiddlewares.findIndex(function (d) {
-      return d === middleware;
-    });
-
-    if (index === -1) {
-      // eslint-disable-next-line no-console
-      console.error('Middleware does not exist!', middleware);
-
-      return;
-    }
-
-    allDynamicMiddlewares = allDynamicMiddlewares.filter(function (_, mdwIndex) {
-      return mdwIndex !== index;
-    });
-  };
-
-  var resetMiddlewares = function resetMiddlewares() {
-    allDynamicMiddlewares = [];
-  };
-
-  return {
-    enhancer: enhancer,
-    addMiddleware: addMiddleware,
-    removeMiddleware: removeMiddleware,
-    resetMiddlewares: resetMiddlewares
-  };
-};
-
-var dynamicMiddlewaresInstance = createDynamicMiddlewares();
-
-exports.default = dynamicMiddlewaresInstance.enhancer;
-var addMiddleware = dynamicMiddlewaresInstance.addMiddleware,
-    removeMiddleware = dynamicMiddlewaresInstance.removeMiddleware,
-    resetMiddlewares = dynamicMiddlewaresInstance.resetMiddlewares;
-exports.addMiddleware = addMiddleware;
-exports.removeMiddleware = removeMiddleware;
-exports.resetMiddlewares = resetMiddlewares;
-exports.createDynamicMiddlewares = createDynamicMiddlewares;
-
-/***/ }),
-
-/***/ "./node_modules/webpack/buildin/global.js":
-/*!***********************************!*\
-  !*** (webpack)/buildin/global.js ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1, eval)("this");
-} catch (e) {
-	// This works if the window reference is available
-	if (typeof window === "object") g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-
-/***/ "./node_modules/webpack/buildin/module.js":
-/*!***********************************!*\
-  !*** (webpack)/buildin/module.js ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = function(module) {
-	if (!module.webpackPolyfill) {
-		module.deprecate = function() {};
-		module.paths = [];
-		// module.parent = undefined by default
-		if (!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
 
 
 /***/ }),
